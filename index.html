@@ -179,6 +179,13 @@
             padding: 20px 24px;
             font-size: 0.98em;
             color: var(--text-primary);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        ul.cards li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+            border-color: var(--accent);
         }
 
         ul.cards li strong {
@@ -204,6 +211,11 @@
 
         .timeline li {
             position: relative;
+            transition: transform 0.25s ease;
+        }
+
+        .timeline li:hover {
+            transform: translateX(4px);
         }
 
         .timeline li::before {
@@ -216,6 +228,11 @@
             border-radius: 50%;
             background-color: var(--accent);
             border: 2px solid var(--bg-primary);
+            transition: transform 0.25s ease;
+        }
+
+        .timeline li:hover::before {
+            transform: scale(1.4);
         }
 
         .timeline .when {
@@ -420,10 +437,22 @@
 
         <section class="reveal" id="contact">
             <h2>Contact</h2>
-            <p>The best way to reach me is via LinkedIn or XING &mdash; or simply by e-mail.</p>
-            <p style="margin-top: 24px;">
-                <a class="link-btn" href="mailto:mail@leine.info">mail@leine.info</a>
-            </p>
+            <p>The best way to reach me is via LinkedIn or XING.</p>
+            <nav class="links" aria-label="Profiles" style="margin-top: 24px; justify-content: flex-start;">
+                <a href="https://www.linkedin.com/in/jonasleine/" class="link-btn" target="_blank" rel="noopener noreferrer">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+                    </svg>
+                    LinkedIn
+                </a>
+                <a href="https://www.xing.com/profile/Jonas_Leine" class="link-btn secondary" target="_blank" rel="noopener noreferrer">
+                    <svg class="icon" viewBox="0 0 540.543 540.543" fill="currentColor" aria-hidden="true">
+                        <path d="M129.989,378.772c8.274,0,15.361-5.006,21.243-15.036c53.813-95.423,81.806-145.093,83.991-149.028l-53.593-93.458c-5.667-9.804-12.858-14.707-21.567-14.707H81.953c-5.019,0-8.495,1.634-10.459,4.902c-2.399,3.268-2.289,7.301,0.325,12.087l52.613,91.176c0.214,0.232,0.214,0.331,0,0.331L41.75,361.453c-2.172,4.149-2.172,8.066,0,11.757c2.173,3.715,5.557,5.562,10.129,5.562H129.989z" />
+                        <path d="M488.492,0h-78.758c-8.495,0-15.472,4.902-20.912,14.707C277.053,212.97,219.206,315.596,215.283,322.555l110.784,203.282c5.227,9.804,12.418,14.706,21.567,14.706h78.104c4.791,0,8.28-1.634,10.459-4.902c2.172-3.715,2.068-7.748-0.325-12.099L326.073,322.555v-0.318L498.627,16.995c2.393-4.571,2.393-8.592,0-12.087C496.662,1.634,493.284,0,488.492,0z" />
+                    </svg>
+                    XING
+                </a>
+            </nav>
         </section>
     </main>
 
@@ -432,8 +461,6 @@
             <a href="https://www.linkedin.com/in/jonasleine/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             &middot;
             <a href="https://www.xing.com/profile/Jonas_Leine" target="_blank" rel="noopener noreferrer">XING</a>
-            &middot;
-            <a href="mailto:mail@leine.info">mail@leine.info</a>
         </p>
         <p>&copy; 2026 Jonas Leine. All rights reserved.</p>
     </footer>
