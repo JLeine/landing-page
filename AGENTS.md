@@ -14,7 +14,9 @@ There is no build, test, lint, typecheck, or codegen command. Verify changes by 
 
 Pushing to `main` runs `.github/workflows/deploy.yml`, which mirrors the repo to Hetzner `public_html/` over FTPS with `--delete`. The repo is the source of truth: removing a file deletes it from the live site, and **any file not excluded below is published publicly**.
 
-Excluded from upload: `.git`, `.github`, `.gitignore`, `README.md`, `LICENSE`, `_site`. `.htaccess` **is** uploaded.
+Excluded from upload: `.git`, `.github`, `.gitignore`, `README.md`, `LICENSE`, `AGENTS.md`, `_site`. `.htaccess` **is** uploaded.
+
+**Adding any new non-website file (docs, config, agent instructions) requires adding it to the `--exclude` list in the workflow**, otherwise `--delete` publishes it. Committing it is not enough.
 
 Work on a feature branch and merge to `main` via PR (see git history); only the `main` push deploys. Renovate opens PRs for GitHub Actions version bumps.
 
