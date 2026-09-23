@@ -24,6 +24,10 @@ Work on a feature branch and merge to `main` via PR (see git history); only the 
 - **HSTS is intentionally not set** in `.htaccess`. Do not add it unless the user explicitly asks.
 - Everything is deployed as-is, so keep dotfiles/config files out of the site root unless intended.
 
+## Commit messages
+
+Use Conventional Commits: `<type>(<optional scope>): <imperative subject>`, e.g. `docs: add commit message guidance`, `fix: correct dark-mode button contrast`. Common types: `feat`, `fix`, `docs`, `chore`, `refactor`, `perf`. Note the existing `git log` predates this convention.
+
 ## Gotchas
 
 - Avatar is served via responsive variants referenced in `index.html`: `avatar-160/320.{jpg,webp}` (with `<picture>`/`srcset`). `avatar.jpg` is only referenced by JSON-LD; `og-image.png` is the social card image. Replacing the photo means regenerating **all** variants, not just `avatar.jpg`.
