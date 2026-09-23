@@ -27,7 +27,7 @@ Options -Indexes
 
 # --- Caching ---
 # HTML revalidates on every request so a deploy is visible immediately.
-# Binary assets get a short max-age; they are not fingerprinted, so keep it low.
+# Images are content-stable, so they get a longer max-age.
 <IfModule mod_headers.c>
     <FilesMatch "\.html$">
         Header set Cache-Control "no-cache"
@@ -47,10 +47,11 @@ Options -Indexes
 
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresByType image/jpeg "access plus 7 days"
-    ExpiresByType image/png "access plus 7 days"
-    ExpiresByType image/svg+xml "access plus 7 days"
-    ExpiresByType image/x-icon "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/x-icon "access plus 30 days"
     ExpiresByType application/xml "access plus 1 days"
     ExpiresByType text/plain "access plus 1 days"
 </IfModule>

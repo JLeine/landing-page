@@ -45,7 +45,8 @@
             --text-primary: #1d1d1f;
             --text-secondary: #6e6e73;
             --accent: #0071e3;
-            --accent-hover: #0077ed;
+            --btn-bg: #0071e3;
+            --btn-bg-hover: #0066cc;
             --border: #d2d2d7;
             --shadow: rgba(0, 0, 0, 0.08);
         }
@@ -57,7 +58,8 @@
                 --text-primary: #f5f5f7;
                 --text-secondary: #a1a1a6;
                 --accent: #2997ff;
-                --accent-hover: #47a9ff;
+                --btn-bg: #0071e3;
+                --btn-bg-hover: #0066cc;
                 --border: #3d3d3f;
                 --shadow: rgba(0, 0, 0, 0.4);
             }
@@ -124,7 +126,7 @@
             align-items: center;
             gap: 8px;
             padding: 12px 24px;
-            background-color: var(--accent);
+            background-color: var(--btn-bg);
             color: #fff;
             text-decoration: none;
             border-radius: 980px;
@@ -134,7 +136,7 @@
         }
 
         .link-btn:hover {
-            background-color: var(--accent-hover);
+            background-color: var(--btn-bg-hover);
             transform: translateY(-2px);
         }
 
@@ -145,7 +147,7 @@
         }
 
         .link-btn.secondary:hover {
-            background-color: var(--accent);
+            background-color: var(--btn-bg);
             color: #fff;
         }
 
@@ -385,7 +387,13 @@
 
 <body>
     <header class="container">
-        <img class="avatar" src="avatar.jpg" alt="Portrait of Jonas Leine" width="160" height="160" fetchpriority="high">
+        <picture>
+            <source type="image/webp" srcset="avatar-160.webp 160w, avatar-320.webp 320w"
+                sizes="(max-width: 600px) 120px, 160px">
+            <img class="avatar" src="avatar-320.jpg" srcset="avatar-160.jpg 160w, avatar-320.jpg 320w"
+                sizes="(max-width: 600px) 120px, 160px" alt="Portrait of Jonas Leine" width="160" height="160"
+                fetchpriority="high">
+        </picture>
         <h1>Jonas Leine</h1>
         <p class="tagline">AI Solution Architect &middot; Cloud &amp; Data</p>
         <nav class="links" aria-label="Profiles">
