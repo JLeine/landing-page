@@ -1,0 +1,56 @@
+# leine.info – Apache configuration
+# Only touches standard modules; every block is guarded by IfModule so that a
+# missing module can never cause a 500 on shared hosting.
+
+# --- Canonical host and paths (301) ---
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # www.leine.info -> leine.info
+    RewriteCond %{HTTP_HOST} ^www\.leine\.info$ [NC]
+    RewriteRule ^ https://leine.info%{REQUEST_URI} [R=301,L]
+
+    # /index.html -> /
+    RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
+    RewriteRule ^/?index\.html$ / [R=301,L]
+</IfModule>
+
+# --- No directory listings ---
+Options -Indexes
+
+# --- Compression ---
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+    AddOutputFilterByType DEFLATE application/xml application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# --- Caching ---
+# HTML revalidates on every request so a deploy is visible immediately.
+# Binary assets get a short max-age; they are not fingerprinted, so keep it low.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # Conservative CSP: inline style/script are part of this single-file page.
+    Header set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
+
+    # Note: HSTS is intentionally NOT set here. It is sticky for a long time and
+    # should only be enabled once HTTPS is guaranteed for every subdomain.
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 7 days"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType image/svg+xml "access plus 7 days"
+    ExpiresByType image/x-icon "access plus 7 days"
+    ExpiresByType application/xml "access plus 1 days"
+    ExpiresByType text/plain "access plus 1 days"
+</IfModule>
