@@ -1,0 +1,34 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-hetzner
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy via FTPS
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+        run: |
+          : "${FTP_PORT:=21}"
+          lftp -c "set cmd:fail-exit yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set ssl:verify-certificate yes; set net:timeout 30; set net:max-retries 3; set net:reconnect-interval-base 5; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p $FTP_PORT \"$FTP_SERVER\"; mirror -R --delete --verbose --parallel=4 --exclude-glob=.git* --exclude-glob=.github* --exclude-glob=README.md --exclude-glob=LICENSE --no-perms --no-umask ./ public_html/"
