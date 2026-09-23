@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Imprint (Impressum) for leine.info, the personal website of Jonas Leine.">
+    <meta name="author" content="Jonas Leine">
+    <title>Imprint | Jonas Leine</title>
+    <link rel="canonical" href="https://leine.info/imprint.html">
+
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --accent: #0071e3;
+            --border: #d2d2d7;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #000000;
+                --bg-secondary: #161617;
+                --text-primary: #f5f5f7;
+                --text-secondary: #a1a1a6;
+                --accent: #2997ff;
+                --border: #3d3d3f;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        main.legal {
+            padding-top: 64px;
+            padding-bottom: 32px;
+        }
+
+        .legal h1 {
+            font-size: clamp(2em, 5vw, 3em);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .legal h2 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 32px 0 8px;
+        }
+
+        .legal p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .legal ul {
+            margin: 0 0 12px 20px;
+            color: var(--text-secondary);
+        }
+
+        .legal li + li {
+            margin-top: 4px;
+        }
+
+        .legal a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .legal a:hover {
+            text-decoration: underline;
+        }
+
+        .legal address {
+            font-style: normal;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .back {
+            margin-bottom: 24px;
+        }
+
+        footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container legal">
+        <p class="back"><a href="/">&larr; Back to home</a></p>
+        <h1>Imprint</h1>
+        <p>Information pursuant to &sect; 5 DDG (German Digital Services Act).</p>
+
+        <h2>Provider</h2>
+        <address>
+            Jonas Leine<br>
+            Baakenallee 52<br>
+            20457 Hamburg<br>
+            Germany
+        </address>
+
+        <h2>Contact</h2>
+        <p>Email: <a class="email" data-email>webmaster [at] leine.info</a></p>
+
+        <h2>Responsible for content</h2>
+        <p>Responsible for journalistic and editorial content pursuant to &sect; 18 (2) MStV: Jonas Leine, address as above.</p>
+
+        <h2>Liability for links</h2>
+        <p>This website contains links to external third-party websites. I have no influence over their content and accept no liability for it. The respective provider or operator of the linked pages is always responsible for their content. At the time of linking, no legal violations were apparent. If I become aware of any legal violation, I will remove the affected link immediately.</p>
+
+        <h2>Copyright</h2>
+        <p>The content and works on this website are subject to German copyright law. Reproduction, editing, distribution or any use beyond the limits of copyright law require my written consent.</p>
+    </main>
+
+    <footer class="container">
+        <p>
+            <a href="/">Home</a>
+            &middot;
+            <a href="imprint.html">Imprint</a>
+            &middot;
+            <a href="privacy.html">Privacy</a>
+        </p>
+        <p>&copy; 2026 Jonas Leine. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Email is assembled at runtime so it never appears in the page source.
+        (function () {
+            var address = 'webmaster' + '\u0040' + 'leine.info';
+            document.querySelectorAll('[data-email]').forEach(function (el) {
+                el.setAttribute('href', 'mailto:' + address);
+                el.textContent = address;
+            });
+        })();
+    </script>
+</body>
+
+</html>
