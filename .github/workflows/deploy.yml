@@ -17,6 +17,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Stage website files
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            --exclude='README.md' \
+            --exclude='LICENSE' \
+            --exclude='_site' \
+            ./ _site/
+          echo "Files to deploy:"
+          find _site -type f
 
       - name: Install lftp
         run: |
@@ -31,4 +47,4 @@ jobs:
           FTP_PORT: ${{ secrets.FTP_PORT }}
         run: |
           : "${FTP_PORT:=21}"
-          lftp -c "set cmd:fail-exit yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set ssl:verify-certificate yes; set net:timeout 30; set net:max-retries 3; set net:reconnect-interval-base 5; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p $FTP_PORT \"$FTP_SERVER\"; mirror -R --delete --verbose --parallel=4 --exclude-glob=.git* --exclude-glob=.github* --exclude-glob=README.md --exclude-glob=LICENSE --no-perms --no-umask ./ public_html/"
+          lftp -c "set cmd:fail-exit yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set ssl:verify-certificate yes; set net:timeout 30; set net:max-retries 3; set net:reconnect-interval-base 5; open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" -p $FTP_PORT \"$FTP_SERVER\"; mirror -R --delete --verbose --parallel=4 --no-perms --no-umask ./_site/ public_html/"
