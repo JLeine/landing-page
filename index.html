@@ -42,7 +42,7 @@
   --tile:#f2f2ef; --avatar:#e8e8e3; --pill:#ffffff; --line:#e3e3de; --hover:#f2f2ee;
   --accent:#3469a8; --on-accent:#ffffff;
   --inv-bg:#1d1d1f; --inv-fg:#f5f5f2; --inv-sub:#b9b9b3;
-  --lit-from:#cfcfc9;
+  --lit-from:#8a8a82;
   --pad:clamp(20px,5vw,40px); --max:1040px;
   color-scheme:light;
 }
@@ -51,7 +51,7 @@
   --tile:#1b1b1d; --avatar:#232326; --pill:#1b1b1d; --line:#2a2a2d; --hover:#1b1b1d;
   --accent:#7aa7dc; --on-accent:#0f0f10;
   --inv-bg:#f2f2ee; --inv-fg:#1a1a1a; --inv-sub:#56564f;
-  --lit-from:#3a3a3d;
+  --lit-from:#6a6a6d;
   color-scheme:dark;
 }
 @media (prefers-color-scheme: dark){
@@ -60,7 +60,7 @@
     --tile:#1b1b1d; --avatar:#232326; --pill:#1b1b1d; --line:#2a2a2d; --hover:#1b1b1d;
     --accent:#7aa7dc; --on-accent:#0f0f10;
     --inv-bg:#f2f2ee; --inv-fg:#1a1a1a; --inv-sub:#56564f;
-    --lit-from:#3a3a3d;
+    --lit-from:#6a6a6d;
     color-scheme:dark;
   }
 }
@@ -99,7 +99,7 @@ section{padding-bottom:clamp(96px,12vw,160px)}
 
 /* Hero */
 .hero{min-height:calc(100svh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;text-align:center;padding-block:48px 88px}
-.avatar{width:104px;height:104px;border-radius:50%;object-fit:cover;background:var(--avatar)}
+.avatar{width:clamp(116px,13.5vw,140px);height:clamp(116px,13.5vw,140px);border-radius:50%;object-fit:cover;background:var(--avatar)}
 .status{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:6px 16px;border-radius:999px;border:1px solid var(--line);background:var(--pill);font-size:14px;color:var(--sub)}
 .dot{width:8px;height:8px;border-radius:50%;background:#2f9e62;flex:none;animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(47,158,98,.35)}50%{box-shadow:0 0 0 7px rgba(47,158,98,0)}}
@@ -261,8 +261,8 @@ footer a{color:var(--mute)}
 
     <section id="top" class="hero">
       <picture>
-        <source type="image/webp" srcset="avatar-160.webp 160w, avatar-320.webp 320w" sizes="104px">
-        <img class="avatar" src="avatar-320.jpg" srcset="avatar-160.jpg 160w, avatar-320.jpg 320w" sizes="104px" alt="Portrait of Jonas Leine" width="104" height="104" fetchpriority="high">
+        <source type="image/webp" srcset="avatar-160.webp 160w, avatar-320.webp 320w" sizes="140px">
+        <img class="avatar" src="avatar-320.jpg" srcset="avatar-160.jpg 160w, avatar-320.jpg 320w" sizes="140px" alt="Portrait of Jonas Leine" width="140" height="140" fetchpriority="high">
       </picture>
       <p class="status"><span class="dot" aria-hidden="true"></span>AI Solution Architect at Hamburg Commercial Bank</p>
       <h1>Jonas Leine.</h1>
