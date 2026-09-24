@@ -399,7 +399,6 @@ footer a{color:var(--mute)}
       <h2>Let's talk.</h2>
       <p>Send me a message and I will get back to you.</p>
       <form id="contact-form" method="post" action="contact.php">
-        <input type="hidden" id="cf-token" name="token" value="">
         <div>
           <label for="cf-name">Name</label>
           <input id="cf-name" name="name" type="text" autocomplete="name" maxlength="100" required>
@@ -473,7 +472,6 @@ footer a{color:var(--mute)}
 (function () {
   var form = document.getElementById('contact-form');
   if (!form) return;
-  var token = document.getElementById('cf-token');
   var question = document.getElementById('cf-question');
   var status = document.getElementById('cf-status');
   function setStatus(text, kind) {
@@ -484,7 +482,6 @@ footer a{color:var(--mute)}
     fetch('contact.php?challenge=1', { headers: { 'Accept': 'application/json' } })
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        token.value = d.token || '';
         question.textContent = d.q ? d.q + ' = ?' : '';
       })
       .catch(function () {

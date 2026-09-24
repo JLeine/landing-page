@@ -6,11 +6,11 @@
 //
 // Spam protection without third-party services or secrets:
 //   - a hidden honeypot field that automated bots fill in
-//   - a single-use challenge token stored server-side, so the form cannot be
+//   - a single-use challenge kept in the PHP session, so the form cannot be
 //     submitted within a few seconds of loading and cannot be replayed
-//   - a per-IP rate limit
+//   - a session-based rate limit
 //
-// Challenges live in the system temp directory, never inside the web root.
+// All state lives in the PHP session; nothing is written to disk by this script.
 
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
@@ -19,17 +19,19 @@ $RECIPIENT   = 'contact@leine.info';
 $SENDER      = 'contact@leine.info';
 $MIN_AGE     = 3;    // seconds: reject submissions that are too fast
 $MAX_AGE     = 1800; // seconds: challenge validity
-$RATE_MAX    = 5;    // submissions allowed per IP per window
+$RATE_MAX    = 5;    // submissions allowed per session per window
 $RATE_WINDOW = 600;  // rate-limit window in seconds
 
-function store_dir()
-{
-    $dir = sys_get_temp_dir() . '/leine-contact';
-    if (!is_dir($dir)) {
-        @mkdir($dir, 0700, true);
-    }
-    return $dir;
-}
+session_set_cookie_params(array(
+    'lifetime' => 0,
+    'path'     => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure'   => !empty($_SERVER['HTTPS']),
+));
+ini_set('session.gc_maxlifetime', (string) $MAX_AGE);
+session_name('leine_cf');
+session_start();
 
 function out($code, $data)
 {
@@ -44,51 +46,13 @@ function str_len($s)
     return function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
 }
 
-function client_ip()
-{
-    return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-}
-
-function issue_challenge()
-{
-    $a = random_int(2, 9);
-    $b = random_int(2, 9);
-    $token = bin2hex(random_bytes(16));
-    $rec = array('a' => $a + $b, 't' => time());
-    @file_put_contents(store_dir() . '/c_' . $token . '.json', json_encode($rec), LOCK_EX);
-    return array('token' => $token, 'q' => $a . ' + ' . $b);
-}
-
-function take_challenge($token)
-{
-    if (!preg_match('/^[a-f0-9]{32}$/', $token)) {
-        return null;
-    }
-    $file = store_dir() . '/c_' . $token . '.json';
-    if (!is_file($file)) {
-        return null;
-    }
-    $rec = json_decode(file_get_contents($file), true);
-    @unlink($file);
-    return is_array($rec) ? $rec : null;
-}
-
-function rate_limited($ip)
+function rate_limited()
 {
     global $RATE_MAX, $RATE_WINDOW;
-    $file = store_dir() . '/rl_' . substr(hash('sha256', $ip), 0, 32) . '.json';
-    $fp = @fopen($file, 'c+');
-    if (!$fp) {
-        return false;
-    }
-    flock($fp, LOCK_EX);
-    $list = json_decode(stream_get_contents($fp), true);
-    if (!is_array($list)) {
-        $list = array();
-    }
     $now = time();
+    $hits = isset($_SESSION['hits']) && is_array($_SESSION['hits']) ? $_SESSION['hits'] : array();
     $kept = array();
-    foreach ($list as $t) {
+    foreach ($hits as $t) {
         if ($t > $now - $RATE_WINDOW) {
             $kept[] = $t;
         }
@@ -97,39 +61,23 @@ function rate_limited($ip)
     if (!$limited) {
         $kept[] = $now;
     }
-    ftruncate($fp, 0);
-    rewind($fp);
-    fwrite($fp, json_encode($kept));
-    fflush($fp);
-    flock($fp, LOCK_UN);
-    fclose($fp);
+    $_SESSION['hits'] = $kept;
     return $limited;
-}
-
-function cleanup()
-{
-    global $MAX_AGE;
-    if (random_int(1, 20) !== 1) {
-        return;
-    }
-    foreach (glob(store_dir() . '/c_*.json') as $f) {
-        if (filemtime($f) < time() - $MAX_AGE) {
-            @unlink($f);
-        }
-    }
 }
 
 $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
 
 if ($method === 'GET') {
-    cleanup();
-    out(200, issue_challenge());
+    $a = random_int(2, 9);
+    $b = random_int(2, 9);
+    $_SESSION['challenge'] = array('sum' => $a + $b, 't' => time());
+    out(200, array('q' => $a . ' + ' . $b));
 }
 if ($method !== 'POST') {
     out(405, array('error' => 'Method not allowed.'));
 }
 
-if (rate_limited(client_ip())) {
+if (rate_limited()) {
     out(429, array('error' => 'Too many messages. Please try again later.'));
 }
 
@@ -137,7 +85,6 @@ $name    = isset($_POST['name']) ? trim($_POST['name']) : '';
 $email   = isset($_POST['email']) ? trim($_POST['email']) : '';
 $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 $answer  = isset($_POST['answer']) ? trim($_POST['answer']) : '';
-$token   = isset($_POST['token']) ? trim($_POST['token']) : '';
 $trap    = isset($_POST['website']) ? trim($_POST['website']) : '';
 
 // Honeypot: real users never see or fill this field.
@@ -145,7 +92,8 @@ if ($trap !== '') {
     out(400, array('error' => 'Your message was flagged as spam.'));
 }
 
-$challenge = take_challenge($token);
+$challenge = isset($_SESSION['challenge']) && is_array($_SESSION['challenge']) ? $_SESSION['challenge'] : null;
+unset($_SESSION['challenge']);
 if ($challenge === null) {
     out(400, array('error' => 'The spam check expired. Please try again.'));
 }
@@ -156,7 +104,7 @@ if ($age < $MIN_AGE) {
 if ($age > $MAX_AGE) {
     out(400, array('error' => 'The spam check expired. Please try again.'));
 }
-if (!preg_match('/^\d{1,3}$/', $answer) || (int) $answer !== (int) $challenge['a']) {
+if (!preg_match('/^\d{1,3}$/', $answer) || (int) $answer !== (int) $challenge['sum']) {
     out(400, array('error' => 'The spam check answer was wrong.'));
 }
 
