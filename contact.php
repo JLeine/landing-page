@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 // Contact form handler for leine.info  (requires PHP 8.1+)
 //
-// GET  -> issues a single-use spam challenge (a small arithmetic question)
+// GET  -> issues a single-use proof-of-work challenge (hashcash style)
 // POST -> validates the submission and forwards it as an email
 //
 // Spam protection without third-party services or secrets:
 //   - a hidden honeypot field that automated bots fill in
-//   - a single-use challenge kept in the PHP session, so the form cannot be
-//     submitted within a few seconds of loading and cannot be replayed
+//   - a single-use challenge kept in the PHP session: the browser must find
+//     a nonce whose sha256(challenge . ':' . nonce) starts with POW_BITS
+//     zero bits. One hash verifies it on the server, but a bot has to burn
+//     about 2^POW_BITS hashes per submission and still cannot submit within
+//     a few seconds of loading or replay a solved challenge
 //   - a session-based rate limit
 //
 // All state lives in the PHP session; nothing is written to disk by this script.
@@ -21,6 +24,7 @@ const MIN_AGE     = 3;    // seconds: reject submissions that are too fast
 const MAX_AGE     = 1800; // seconds: challenge validity
 const RATE_MAX    = 5;    // submissions allowed per session per window
 const RATE_WINDOW = 600;  // rate-limit window in seconds
+const POW_BITS    = 18;   // leading zero bits required in sha256(challenge . ':' . nonce)
 
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
@@ -81,10 +85,9 @@ function encode_subject(string $subject): string
 
 function issue_challenge(): never
 {
-    $a = random_int(2, 9);
-    $b = random_int(2, 9);
-    $_SESSION['challenge'] = ['sum' => $a + $b, 't' => time()];
-    out(200, ['q' => "$a + $b"]);
+    $challenge = bin2hex(random_bytes(16));
+    $_SESSION['challenge'] = ['c' => $challenge, 'bits' => POW_BITS, 't' => time()];
+    out(200, ['challenge' => $challenge, 'difficulty' => POW_BITS]);
 }
 
 function handle_post(): never
@@ -96,7 +99,7 @@ function handle_post(): never
     $name    = post_string('name');
     $email   = post_string('email');
     $message = post_string('message');
-    $answer  = post_string('answer');
+    $nonce   = post_string('nonce');
     $trap    = post_string('website');
 
     // Honeypot: real users never see or fill this field.
@@ -117,8 +120,15 @@ function handle_post(): never
     if ($age > MAX_AGE) {
         out(400, ['error' => 'The spam check expired. Please try again.']);
     }
-    if (!preg_match('/^\d{1,3}$/', $answer) || (int) $answer !== (int) ($challenge['sum'] ?? -1)) {
-        out(400, ['error' => 'The spam check answer was wrong.']);
+    $bits = (int) ($challenge['bits'] ?? 0);
+    $c    = is_string($challenge['c'] ?? null) ? $challenge['c'] : '';
+    if ($bits < 1 || $bits > 32 || $c === '') {
+        out(400, ['error' => 'The spam check expired. Please try again.']);
+    }
+    if (!preg_match('/^\d{1,15}$/', $nonce)
+        || (int) hexdec(substr(hash('sha256', $c . ':' . $nonce), 0, 8)) >= 2 ** (32 - $bits)
+    ) {
+        out(400, ['error' => 'The spam check could not be verified. Please try again.']);
     }
 
     if ($name === '' || str_len($name) > 100) {
