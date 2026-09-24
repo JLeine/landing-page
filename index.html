@@ -501,6 +501,7 @@ footer a{color:var(--mute)}
           challenge();
         } else {
           setStatus((res.data && res.data.error) || 'Something went wrong. Please try again.', 'err');
+          if (res.status === 400) challenge();
         }
       })
       .catch(function () {
