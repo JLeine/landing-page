@@ -167,6 +167,16 @@ section{padding-bottom:clamp(96px,12vw,160px)}
 .contact h2{font-size:clamp(64px,9vw,112px);font-weight:600;letter-spacing:-.045em;line-height:1}
 .contact p{font-size:clamp(19px,2vw,24px);color:var(--mute)}
 .contact .ctas{gap:14px}
+.contact form{width:100%;max-width:560px;display:grid;gap:16px;text-align:left}
+.contact label{display:block;font-size:14px;color:var(--mute);margin-bottom:6px}
+.contact input[type=text],.contact input[type=email],.contact textarea{width:100%;font:inherit;font-size:16px;line-height:1.4;color:var(--fg);background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.contact textarea{min-height:130px;resize:vertical}
+.contact input:focus-visible,.contact textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.contact .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.contact .form-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px}
+.contact .form-status{margin:0;font-size:15px;color:var(--mute)}
+.contact .form-status.ok{color:#2f9e62}
+.contact .form-status.err{color:#c0392b}
 footer .wrap{padding-bottom:40px;font-size:13px;color:var(--mute)}
 footer .in{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;width:100%}
 footer nav{display:flex;gap:20px}
@@ -379,7 +389,34 @@ footer a{color:var(--mute)}
 
     <section id="contact" class="contact reveal">
       <h2>Let's talk.</h2>
-      <p>The best way to reach me is via LinkedIn or XING.</p>
+      <p>Send me a message and I will get back to you. You can also reach me on LinkedIn or XING.</p>
+      <form id="contact-form" method="post" action="contact.php">
+        <input type="hidden" id="cf-token" name="token" value="">
+        <div>
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" maxlength="100" required>
+        </div>
+        <div>
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required>
+        </div>
+        <div>
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" maxlength="5000" required></textarea>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <div>
+          <label for="cf-answer">Spam check: <span id="cf-question">&hellip;</span></label>
+          <input id="cf-answer" name="answer" type="text" inputmode="numeric" autocomplete="off" maxlength="3" required>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-lg" type="submit">Send message</button>
+          <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
       <div class="ctas">
         <a class="btn btn-lg" href="https://www.linkedin.com/in/jonasleine/" rel="me noopener" target="_blank">LinkedIn</a>
         <a class="btn btn-lg btn-outline" href="https://www.xing.com/profile/Jonas_Leine" rel="me noopener" target="_blank">XING</a>
@@ -413,6 +450,49 @@ footer a{color:var(--mute)}
   });
   if (mq.addEventListener) mq.addEventListener('change', label);
   label();
+})();
+</script>
+<script>
+(function () {
+  var form = document.getElementById('contact-form');
+  if (!form) return;
+  var token = document.getElementById('cf-token');
+  var question = document.getElementById('cf-question');
+  var status = document.getElementById('cf-status');
+  function setStatus(text, kind) {
+    status.textContent = text || '';
+    status.className = 'form-status' + (kind ? ' ' + kind : '');
+  }
+  function challenge() {
+    fetch('contact.php?challenge=1', { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        token.value = d.token || '';
+        question.textContent = d.q ? d.q + ' = ?' : '';
+      })
+      .catch(function () {
+        setStatus('The spam check could not be loaded. Please reload the page.', 'err');
+      });
+  }
+  challenge();
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    setStatus('Sending...', '');
+    fetch('contact.php', { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) })
+      .then(function (r) { return r.json().then(function (d) { return { status: r.status, data: d }; }); })
+      .then(function (res) {
+        if (res.status === 200 && res.data.ok) {
+          form.reset();
+          setStatus('Thanks! Your message has been sent.', 'ok');
+          challenge();
+        } else {
+          setStatus((res.data && res.data.error) || 'Something went wrong. Please try again.', 'err');
+        }
+      })
+      .catch(function () {
+        setStatus('Something went wrong. Please try again.', 'err');
+      });
+  });
 })();
 </script>
 </body>
