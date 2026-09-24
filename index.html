@@ -279,18 +279,27 @@
         }
 
         /*
-         * Scroll-Reveal: hidden state only applies when JS is active (.js class),
-         * so the page is fully visible without JavaScript.
+         * Scroll-Reveal via CSS scroll-driven animations (no JavaScript).
+         * Browsers without support simply render the sections statically.
          */
-        .js .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-        }
+        @supports (animation-timeline: view()) {
+            .reveal {
+                animation: reveal-fade linear both;
+                animation-timeline: view();
+                animation-range: entry 0% entry 55%;
+            }
 
-        .js .reveal.visible {
-            opacity: 1;
-            transform: none;
+            @keyframes reveal-fade {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -302,10 +311,8 @@
                 animation: none;
             }
 
-            .js .reveal {
-                opacity: 1;
-                transform: none;
-                transition: none;
+            .reveal {
+                animation: none;
             }
         }
 
@@ -384,7 +391,6 @@
             ]
         }
     </script>
-    <script>document.documentElement.classList.add('js');</script>
 </head>
 
 <body>
@@ -545,19 +551,6 @@
         <p>&copy; 2026 Jonas Leine. All rights reserved.</p>
     </footer>
 
-    <script>
-        // Tiny vanilla-JS scroll reveal (works in every modern browser, no framework).
-        // Respects no-JS (content stays visible) and prefers-reduced-motion (handled in CSS).
-        const io = new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    io.unobserve(entry.target);
-                }
-            }
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-    </script>
 </body>
 
 </html>
