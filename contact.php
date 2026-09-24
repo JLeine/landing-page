@@ -32,6 +32,8 @@ session_start([
     'cookie_httponly'  => true,
     'cookie_samesite'  => 'Lax',
     'cookie_secure'    => !empty($_SERVER['HTTPS']),
+    'use_strict_mode'  => true,
+    'use_only_cookies' => true,
     'gc_maxlifetime'   => MAX_AGE,
 ]);
 
@@ -59,7 +61,7 @@ function rate_limited(): bool
     $now = time();
     $hits = array_values(array_filter(
         is_array($_SESSION['hits'] ?? null) ? $_SESSION['hits'] : [],
-        static fn (int $t): bool => $t > $now - RATE_WINDOW,
+        static fn (mixed $t): bool => is_int($t) && $t > $now - RATE_WINDOW,
     ));
     if (count($hits) >= RATE_MAX) {
         $_SESSION['hits'] = $hits;
@@ -142,7 +144,7 @@ function handle_post(): never
         'X-Mailer: leine.info contact form',
     ]);
 
-    if (!@mail(RECIPIENT, $subject, $body, $headers, '-f' . SENDER)) {
+    if (!mail(RECIPIENT, $subject, $body, $headers, '-f' . SENDER)) {
         out(500, ['error' => 'The message could not be sent. Please try again later.']);
     }
     out(200, ['ok' => true]);
