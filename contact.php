@@ -15,8 +15,8 @@
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
-$RECIPIENT   = 'kontakt@leine.info';
-$SENDER      = 'kontakt@leine.info';
+$RECIPIENT   = 'contact@leine.info';
+$SENDER      = 'contact@leine.info';
 $MIN_AGE     = 3;    // seconds: reject submissions that are too fast
 $MAX_AGE     = 1800; // seconds: challenge validity
 $RATE_MAX    = 5;    // submissions allowed per IP per window
