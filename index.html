@@ -100,7 +100,7 @@ section{padding-bottom:clamp(96px,12vw,160px)}
 /* Hero */
 .hero{min-height:calc(100svh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;text-align:center;padding-block:48px 88px}
 .avatar{width:104px;height:104px;border-radius:50%;object-fit:cover;background:var(--avatar)}
-.status{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:6px 16px;border-radius:999px;border:1px solid var(--line);background:var(--pill);font-size:14px;color:var(--sub)}
+.status{display:inline-flex;align-items:center;gap:10px;min-height:36px;max-width:100%;padding:6px 16px;border-radius:999px;border:1px solid var(--line);background:var(--pill);font-size:14px;color:var(--sub);text-wrap:balance}
 .dot{width:8px;height:8px;border-radius:50%;background:#2f9e62;flex:none;animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(47,158,98,.35)}50%{box-shadow:0 0 0 7px rgba(47,158,98,0)}}
 .hero h1{font-size:clamp(60px,10vw,120px);line-height:1;font-weight:600;letter-spacing:-.042em}
