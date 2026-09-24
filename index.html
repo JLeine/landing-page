@@ -166,7 +166,6 @@ section{padding-bottom:clamp(96px,12vw,160px)}
 .contact{padding-top:clamp(24px,5vw,80px);display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center}
 .contact h2{font-size:clamp(64px,9vw,112px);font-weight:600;letter-spacing:-.045em;line-height:1}
 .contact p{font-size:clamp(19px,2vw,24px);color:var(--mute)}
-.contact .ctas{gap:14px}
 .contact form{width:100%;max-width:560px;display:grid;gap:16px;text-align:left}
 .contact label{display:block;font-size:14px;color:var(--mute);margin-bottom:6px}
 .contact input[type=text],.contact input[type=email],.contact textarea{width:100%;font:inherit;font-size:16px;line-height:1.4;color:var(--fg);background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
@@ -389,7 +388,7 @@ footer a{color:var(--mute)}
 
     <section id="contact" class="contact reveal">
       <h2>Let's talk.</h2>
-      <p>Send me a message and I will get back to you. You can also reach me on LinkedIn or XING.</p>
+      <p>Send me a message and I will get back to you.</p>
       <form id="contact-form" method="post" action="contact.php">
         <input type="hidden" id="cf-token" name="token" value="">
         <div>
@@ -417,10 +416,6 @@ footer a{color:var(--mute)}
           <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
         </div>
       </form>
-      <div class="ctas">
-        <a class="btn btn-lg" href="https://www.linkedin.com/in/jonasleine/" rel="me noopener" target="_blank">LinkedIn</a>
-        <a class="btn btn-lg btn-outline" href="https://www.xing.com/profile/Jonas_Leine" rel="me noopener" target="_blank">XING</a>
-      </div>
     </section>
 
   </div>
